@@ -59,14 +59,3 @@ async def get_vespa_listings():
     except httpx.RequestError as e:
         # Handle other request errors
         raise HTTPException(status_code=500, detail=str(e))
-
-    response = requests.get(
-        url="https://www.subito.it/annunci-emilia-romagna-vicino/vendita/moto-e-scooter/?q=vespa&bb=000053&pe=2000&me=20&cce=125"
-    )
-    soup = BeautifulSoup(response.text, "html.parser")
-
-    products = soup.find_all("div", class_=re.compile(r"item-card"))
-
-    print(products)
-
-    return products
