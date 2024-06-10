@@ -33,25 +33,21 @@ async def get_vespa_listings():
         soup = BeautifulSoup(response.text, "html.parser")
         products = soup.find_all("div", class_=re.compile(r"item-card"))
         modena_coords = get_coordinates("Modena")
-        vespa_listings = []
-        for product in products:
-            link = product.find("a", class_="SmallCard-module_link__hOkzY")["href"]
-            price = product.find("p", class_="index-module_price__N7M2x").text.strip()
-            location_span = product.find_all(
-                "span", class_="index-module_sbt-text-atom__ed5J9"
-            )
-            location = remove_vetrina_prefix(
-                f"{location_span[0].text.strip()} {location_span[1].text.strip()}"
-            )
-            coords = get_coordinates(location)
-            distance = geodesic(modena_coords, coords).km
-            vespa_listings.append(
-                VespaListing(
-                    link=link, price=price, location=location, distance=distance
-                )
-            )
+        product = products[0]
 
-        return vespa_listings
+        link = product.find("a", class_="SmallCard-module_link__hOkzY")["href"]
+        price = product.find("p", class_="index-module_price__N7M2x").text.strip()
+        location_span = product.find_all(
+            "span", class_="index-module_sbt-text-atom__ed5J9"
+        )
+        location = remove_vetrina_prefix(
+            f"{location_span[0].text.strip()} {location_span[1].text.strip()}"
+        )
+        coords = get_coordinates(location)
+        distance = geodesic(modena_coords, coords).km
+        return VespaListing(
+            link=link, price=price, location=location, distance=distance
+        )
 
     except httpx.HTTPStatusError as e:
         # Handle HTTP errors
